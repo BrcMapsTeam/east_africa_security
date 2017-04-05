@@ -53,3 +53,10 @@ a {
 .titles {
   cursor:pointer;
 }
+
+#slider {
+  border-bottom-style:solid;
+  border-bottom-width:1px;
+  border-bottom-color:#D33F49;
+  margin-bottom:20px;
+}
