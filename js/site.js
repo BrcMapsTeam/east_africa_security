@@ -173,17 +173,11 @@ function hxlProxyToJSON(input){
 //and parses the date if the date is valid, if not it changes the date into undefined
 
 function parseDates(tags, data) {
-    var datePattern = new RegExp('(19|20)\\d\\d-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])');
-    var parseDateFormat = d3.time.format("%Y-%m-%d").parse;
+    var parseDateFormat = d3.time.format("%d/%m/%Y").parse;
     data.forEach(function (d) {
         tags.forEach(function (t) {
-            if (datePattern.test(d[t])) {
-                d[t] = parseDateFormat(d[t]);
-            } else {
-                console.log("the following date is not valid: ", d[t]);
-                d[t] = undefined;
-            }
-        })
+            d[t] = parseDateFormat(d[t]);
+        });
     });
 
     data.sort(date_sort);
@@ -194,7 +188,7 @@ function parseDates(tags, data) {
 function removeIncompletes(data){
     output = [];
     data.forEach(function (d) {
-        if (!isNaN(d['#geo+lat']) && !isNaN(d['#geo+lon']) && (d['#date'] !== undefined) && d['#geo+lat'] <= 90 && d['#geo+lat'] >= -90 && d['#geo+lon'] >= -180 && d['#geo+lon'] <= 180) {
+        if (!isNaN(d['#geo+lat']) && !isNaN(d['#geo+lon']) && (d['#date'] !== undefined) && d['#date'] !== null && d['#geo+lat'] <= 90 && d['#geo+lat'] >= -90 && d['#geo+lon'] >= -180 && d['#geo+lon'] <= 180) {
             output.push(d);
         }
     });
@@ -207,9 +201,9 @@ var date_sort = function (d1, d2) {
     return 0;
 };
 
-var keyStatsCall = $.ajax({ 
+var securityCall = $.ajax({ 
     type: 'GET', 
-    url: 'https://proxy.hxlstandard.org/data.json?force=on&filter01=clean&clean-num-tags01=%23geo&strip-headers=on&url=https%3A//docs.google.com/spreadsheets/d/1uecK0OhCxMQmmWspuPoTvFL4o3xmfJVRrvE-wMUtQ_4/edit%23gid%3D0',
+    url: 'https://proxy.hxlstandard.org/data.json?force=on&url=https%3A//docs.google.com/spreadsheets/d/1uecK0OhCxMQmmWspuPoTvFL4o3xmfJVRrvE-wMUtQ_4/edit%23gid%3D1701991197&strip-headers=on',
     dataType: 'json',
 });
 
@@ -227,8 +221,8 @@ var markerClusters = L.markerClusterGroup();
 
 generateMap();
 
-$.when(keyStatsCall).then(function(keyStatsArgs){
-    data = parseDates(['#date'],(hxlProxyToJSON(keyStatsArgs)));
+$.when(securityCall).then(function(securityArgs){
+    data = parseDates(['#date'],(hxlProxyToJSON(securityArgs)));
     data = removeIncompletes(data);
     addSlider(data);
     data = clusterMarkers(data);
